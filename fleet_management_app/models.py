@@ -10,10 +10,11 @@ class Taxis(models.Model):
     
 class Trajectories(models.Model):
   id = models.AutoField(primary_key=True)
+  taxi = models.ForeignKey(Taxis, on_delete=models.CASCADE, related_name='trajectories')
   date = models.DateTimeField()
   latitude = models.FloatField()
   longitude = models.FloatField()
-  taxi = models.ForeignKey(Taxis, on_delete=models.CASCADE, related_name='trajectories')
+  
 
   def str(self):
-    return f"Trajectory ID: {self.id}, Date: {self.date}, Latitude: {self.latitude}, Longitude: {self.longitude}, Taxi: {self.taxi}"
+    return f"Trajectory ID: {self.id}, Taxi: {self.taxi}, Date: {self.date}, Latitude: {self.latitude}, Longitude: {self.longitude}"
