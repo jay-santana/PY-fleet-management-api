@@ -5,9 +5,9 @@ from .models import Taxis, Trajectories
 class TaxisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Taxis
-        fields = ['id', 'plate']  # Inclua todas as informações do táxi que você deseja retornar
+        fields = ['id', 'plate']  # Inclue informações específicas que desejo retornar de taxis
 class TrajectoriesSerializer(serializers.ModelSerializer):
-    taxi = TaxisSerializer()  # Use o serializer do táxi para serializar o objeto de táxi
+    taxi = TaxisSerializer()  # Usa o serializer do taxis para serializar o objeto de taxi
     class Meta:
         model = Trajectories
-        fields = '__all__'
+        fields = '__all__' # Inclue todas as informações que desejo retornar de trajectories
