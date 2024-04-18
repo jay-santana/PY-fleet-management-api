@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination 
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Q
 
 from .models import Taxis, Trajectories
 from .serializers import TaxisSerializer, TrajectoriesSerializer
@@ -16,7 +17,35 @@ import json
 @api_view(['GET'])
 def listTaxis(request):
     if request.method == 'GET':
+        # Get request query parameters
+        filter_by = request.query_params.get('filter_by', None)
+        sort_by = request.query_params.get('sort_by', None)
+        search = request.query_params.get('search', None)
+
         taxis = Taxis.objects.all()    # Get all objects in Taxis database (It returns a queryset)
+        # Filter by ID or plate
+        if filter_by:
+            try:
+                filter_by_id = int(filter_by)
+                taxis = taxis.filter(id=filter_by_id)
+            except ValueError:
+                taxis = taxis.filter(plate__icontains=filter_by)
+        
+        # Sort by ID or plate
+        if sort_by:
+            if sort_by.startswith('-'):
+                # Descending sort (starts with '-', example: '-id' and '-plate')
+                sort_by_field = sort_by[1:]
+                taxis = taxis.order_by('-' + sort_by_field)
+            else:
+                # Ascending ordering (starts without '-', example: '-id' and '-plate')
+                taxis = taxis.order_by(sort_by)
+        
+        # Search by ID e plate
+        if search:
+          taxis = taxis.filter(Q(id__icontains=search) | Q(plate__icontains=search))
+
+        # Pagination
         paginator = PageNumberPagination()
         paginator.page_size = 10 #data pagination
         result_page = paginator.paginate_queryset(taxis, request)
