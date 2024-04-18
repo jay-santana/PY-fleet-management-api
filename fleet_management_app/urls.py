@@ -4,6 +4,6 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('taxis/', views.get_taxis, name='get_all_taxis'),
-    path('trajectories/', views.get_trajectories, name='get_all_trajectories'),
+    path('taxis/', views.listTaxis, name='get_all_taxis'),
+    path('trajectories/', views.listTrajectories, name='get_all_trajectories'),
 ]
