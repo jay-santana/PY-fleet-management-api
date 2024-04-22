@@ -5,56 +5,15 @@ from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination 
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q
 
 from .models import Taxis, Trajectories
 from .serializers import TaxisSerializer, TrajectoriesSerializer
 from .schemas import taxis_list_schema, trajectories_list_schema
+from .utils import TaxiUtils
 
 import json
 
 # Create your views here.
-from django.db.models import Q
-
-# Function to filter taxis
-def filter_taxis(taxis, filter_by):
-    if filter_by is not None:
-        # Check if it's a number (ID) or plate
-        if filter_by.isdigit():  # If it's a number, assume it's the ID
-            return taxis.filter(id=int(filter_by))
-        else:  # If it's not a number, assume it's the plate
-            return taxis.filter(plate__icontains=filter_by)
-    return taxis
-
-# Function to order taxis
-def sort_taxis(taxis, sort_by):
-    if sort_by is not None:
-        return taxis.order_by('-' + sort_by[1:] if sort_by.startswith('-') else sort_by)
-    return taxis
-
-# Function to search for taxis
-def search_taxis(taxis, search):
-    if search is not None:
-        return taxis.filter(Q(id__icontains=search) | Q(plate__icontains=search))
-    return taxis
-
-# Function to get the page size of a request
-def get_page_size(request):
-    page_size = request.query_params.get('page_size', 10)
-    try:
-        page_size = int(page_size)
-    except ValueError:
-        page_size = 10
-    return page_size
-
-# Function to get the page number of a request
-def get_page_number(request):
-    page_number = request.query_params.get('page', 1)
-    try:
-        page_number = int(page_number)
-    except ValueError:
-        page_number = 1
-    return page_number
 
 # Function to list all taxis
 @api_view(['GET'])
@@ -63,25 +22,31 @@ def listTaxis(request):
     List all taxis with optional filtering, sorting, searching, and pagination.
     """
     if request.method == 'GET':
+        # Instanciar a classe TaxiUtils com o objeto de request
+        taxi_utils = TaxiUtils(request)
         # Get request query parameters
-        filter_by = request.query_params.get('filter_by', None)
-        sort_by = request.query_params.get('sort_by', None)
-        search = request.query_params.get('search', None)
+        filter_by = request.query_params.get('filter_by')
+        sort_by = request.query_params.get('sort_by')
+        search = request.query_params.get('search')
 
         # Get page size and page number
-        page_size = get_page_size(request)
-        page_number = get_page_number(request)
+        page_size = taxi_utils.get_page_size()
+        page_number = taxi_utils.get_page_number()
 
         # Filter, sort, and search taxis
         taxis = Taxis.objects.all()
-        taxis = filter_taxis(taxis, filter_by)
-        taxis = sort_taxis(taxis, sort_by)
-        taxis = search_taxis(taxis, search)
+        taxis = taxi_utils.filter_taxis(taxis, filter_by)
+        taxis = taxi_utils.sort_taxis(taxis, sort_by)
+        taxis = taxi_utils.search_taxis(taxis, search)
         
         # Paginate the queryset using PageNumberPagination
         paginator = PageNumberPagination()
         paginator.page_size = page_size
         result_page = paginator.paginate_queryset(taxis, request)
+
+        # Verificar se a lista de táxis está vazia
+        if not result_page:
+            return Response({'detail': 'Nenhum táxi encontrado.'}, status=status.HTTP_404_NOT_FOUND)
         
         # Serialize the paginated queryset
         serializer = TaxisSerializer(result_page, many=True)
