@@ -1,8 +1,6 @@
-from django.db.models import Q
-from django.db.models import Max
+from django.db.models import Q, Max
 
 from .models import Trajectories
-
 
 class BaseUtils:
     def __init__(self, request):
@@ -62,7 +60,7 @@ class TrajectoriesUtils(BaseUtils):
     def search_trajectories(self, trajectories, search):
         return self.search_objects(trajectories, search, 'taxi__id', 'taxi__plate')
 class LastLocationsUtils(BaseUtils):
-    def get_last_taxi_locations(self):
+    def get_taxis_last_location(self):
         taxi_trajectories = Trajectories.objects.values('taxi_id').annotate(last_trajectory_id=Max('id'))
         return Trajectories.objects.filter(id__in=[trajectory_info['last_trajectory_id'] for trajectory_info in taxi_trajectories])
 
@@ -74,4 +72,3 @@ class LastLocationsUtils(BaseUtils):
 
     def search_last_locations(self, last_locations, search):
         return self.search_objects(last_locations, search, 'taxi__id', 'taxi__plate')
-

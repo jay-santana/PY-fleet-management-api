@@ -31,7 +31,7 @@ def last_taxis_location(request):
         page_number = last_locations_utils.get_page_number()
 
         # Get the latest locations of all taxis
-        last_trajectories = last_locations_utils.get_last_taxis_locations()
+        last_trajectories = last_locations_utils.get_taxis_last_location()
 
         # Check if the list of taxis is empty
         if not last_trajectories:
