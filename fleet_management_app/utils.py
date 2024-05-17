@@ -126,18 +126,3 @@ class LastTaxisLocationUtils(BaseUtils):
     def search_last_locations(self, last_locations, search):
         return self.search_objects(last_locations, search, 'id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude')
 
-    # def search_last_locations(self, last_locations, search):
-    #     if search is not None:
-    #         search_lower = str(search).lower()
-    #         # Obtenha as últimas localizações de táxis usando a função existente
-    #         last_trajectories = self.get_taxis_last_location()
-    #         # Filtra as últimas localizações de táxis pelo ID do táxi
-    #         if isinstance(last_trajectories, list):  # Verifica se é uma lista
-    #             return [item for item in last_trajectories if any(str(getattr(item.taxi, field)).lower() == search_lower for field in ['id', 'plate']) or str(item.id).lower() == search_lower or str(item.date).lower() == search_lower or str(item.latitude).lower() == search_lower or str(item.longitude).lower() == search_lower]
-    #         else:  # Se for um queryset
-    #             query = Q()
-    #             for field in ['id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude']:
-    #                 query |= Q(**{f'{field}__icontains': search_lower})
-    #             return last_trajectories.filter(query)
-        
-    #     return last_locations
