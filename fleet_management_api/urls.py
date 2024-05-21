@@ -25,7 +25,7 @@ schema_view = swagger_get_schema_view(
   openapi.Info(
     title='Fleet Management API',
     default_version='1.0.0',
-    description='API para consultar as localizações dos veículos de uma empresa de táxis.',
+    description='API to query the location of a taxi company\'s vehicles.',
     # term_of_service= "https://www.google.com/policies/terms/" , 
     # contact=openapi.Contact(email= "contact@fleetmanagement.com" ), 
     # licence=openapi.License(name= "BSD Licença" ), 
