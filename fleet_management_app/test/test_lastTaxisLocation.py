@@ -19,11 +19,9 @@ def mock_last_taxis_location_queryset(request):
         Trajectories(id=6, taxi=mock_taxis[1], date=datetime(2024, 5, 9, 9, 10, 3), latitude=11.4321, longitude=21.8765),
     ]
 
-    taxi_ids = [taxi.id for taxi in mock_taxis]
-    
     # Lista para armazenar as últimas localizações de cada táxi
     last_locations = []
-    for taxi_id in taxi_ids:
+    for taxi_id in [taxi.id for taxi in mock_taxis]:
         # Filtra as trajetórias apenas para o táxi atual
         taxi_trajectories = [t for t in mock_trajectories if t.taxi.id == taxi_id]
         if taxi_trajectories:
@@ -33,9 +31,7 @@ def mock_last_taxis_location_queryset(request):
 
     with patch('fleet_management_app.views.viewsLastTaxisLocation.LastTaxisLocationUtils.get_taxis_last_location') as mock_last_taxis_location_queryset:
         # Crie um mock do queryset de Trajectories
-        # print("Valor retornado pelo mock:", mock_last_taxis_location_queryset.return_value)
         mock_last_taxis_location_queryset.return_value = last_locations
-        # print("Valor retornado pelo mock:", mock_last_taxis_location_queryset.return_value)
         yield mock_last_taxis_location_queryset
 
 def test_last_taxis_location_endpoint(mock_last_taxis_location_queryset):
@@ -44,9 +40,6 @@ def test_last_taxis_location_endpoint(mock_last_taxis_location_queryset):
     # Making a GET request to the endpoint
     request = factory.get('/api/lastlocation/')
     response = lastTaxisLocation(request)
-    
-    # Printando o comprimento da lista de resultados
-    # print("Comprimento da lista de resultados:", len(response.data['results']))
     
     # Asserting that the list of taxis is not empty
     assert response.status_code == 200
@@ -60,13 +53,13 @@ def test_last_taxis_location_filter_id(mock_last_taxis_location_queryset):
     factory = APIRequestFactory()
 
     # Making a GET request to the endpoint with filter parameter
-    request = factory.get('/api/lastlocation/', {'id': 5})
+    request = factory.get('/api/lastlocation/', {'filter_by':1})
     response = lastTaxisLocation(request)
 
     # Asserting the response data
     assert response.status_code == 200
-    assert len(response.data['results']) == 2
-    assert response.data['results'][1]['id'] == 5
+    assert len(response.data['results']) == 1
+    assert response.data['results'][0]['taxi']['id'] == 1
 
 def test_last_taxis_location_sort_id_asc(mock_last_taxis_location_queryset):
     factory = APIRequestFactory()
@@ -98,7 +91,7 @@ def test_last_taxis_location_sort_plate_desc(mock_last_taxis_location_queryset):
     assert response.data['results'][0]['taxi']['plate'] == "DEFG-4567"
     assert response.data['results'][1]['taxi']['plate'] == "ABCD-1234"
     
-def test_list_trajectires_search_plate(mock_last_taxis_location_queryset):
+def test__last_taxis_location_sort_search_plate(mock_last_taxis_location_queryset):
     factory = APIRequestFactory()
 
     # Making a GET request to the endpoint with search parameter
@@ -112,7 +105,7 @@ def test_list_trajectires_search_plate(mock_last_taxis_location_queryset):
     assert len(response.data['results']) == 1
     assert response.data['results'][0]['taxi']['plate'] == 'ABCD-1234'
 
-def test_list_trajectires_search_long(mock_last_taxis_location_queryset):
+def test__last_taxis_location_sort_search_long(mock_last_taxis_location_queryset):
     factory = APIRequestFactory()
 
     # Making a GET request to the endpoint with search parameter
@@ -123,8 +116,25 @@ def test_list_trajectires_search_long(mock_last_taxis_location_queryset):
     assert response.status_code == 200
 
     # Asserting the response data
+    assert 'results' in response.data
     assert len(response.data['results']) == 1
     assert response.data['results'][0]['longitude'] == 23.4567
+
+def test__last_taxis_location_sort_search_date(mock_last_taxis_location_queryset):
+    factory = APIRequestFactory()
+
+    search_date = datetime(2024, 5, 9, 10, 15, 30).isoformat()
+
+    # Making a GET request to the endpoint with search parameter
+    request = factory.get('/api/lastlocation/', {'search': search_date})
+    response = lastTaxisLocation(request)
+
+    # Asserting the response status code
+    assert response.status_code == 200
+
+    # Asserting the response data
+    assert len(response.data['results']) == 1
+    assert response.data['results'][0]['date'] == '2024-05-09T10:15:30Z'
 
 def test_last_taxis_location_page_number(mock_last_taxis_location_queryset):
     # Mocking the queryset with more than one page of data
