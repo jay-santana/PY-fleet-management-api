@@ -64,9 +64,6 @@ def test_list_trajectories_sort_asc(mock_trajectories_queryset):
     request = factory.get('/api/trajectories/', {'sort_by': 'latitude'})
     response = listTrajectories(request)
 
-    # Verificar a ordem dos resultados
-    print("Ordem dos resultados:", [item['latitude'] for item in response.data['results']])
-
     # Asserting the response data
     assert response.status_code == 200
     assert len(response.data['results']) == 2
@@ -94,15 +91,28 @@ def test_list_trajectires_search_id(mock_trajectories_queryset):
     request = factory.get('/api/trajectories/', {'search':3})
     response = listTrajectories(request)
 
-    # Printando a lista de trajetórias retornadas
-    print(response.data['results'])
-
     # Asserting the response status code
     assert response.status_code == 200
 
     # Asserting the response data
     assert len(response.data['results']) == 1
     assert response.data['results'][0]['id'] == 3
+
+def test_list_trajectires_search_date(mock_trajectories_queryset):
+    factory = APIRequestFactory()
+    
+    search_date = datetime(2024, 5, 10, 5, 10, 2).isoformat()
+
+    # Making a GET request to the endpoint with search parameter
+    request = factory.get('/api/trajectories/', {'search':search_date})
+    response = listTrajectories(request)
+
+    # Asserting the response status code
+    assert response.status_code == 200
+
+    # Asserting the response data
+    assert len(response.data['results']) == 1
+    assert response.data['results'][0]['date'] == '2024-05-10T05:10:02Z'
 
 def test_list_trajectories_page_number(mock_trajectories_queryset):
     # Mocking the queryset with more than one page of data
