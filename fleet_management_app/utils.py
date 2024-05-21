@@ -1,4 +1,5 @@
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Subquery
+from datetime import datetime
 
 from .models import Trajectories
 
@@ -29,17 +30,23 @@ class BaseUtils:
 
     def search_objects(self, queryset, search, *fields):
         if search is not None:
-            search_lower = str(search).lower()
+            search_lower = search.lower()
+            search_date = None
+            try:
+                search_date = datetime.fromisoformat(search.replace('Z', '+00:00'))  # Parse ISO format with timezone
+            except ValueError:
+                pass
             if isinstance(queryset, list):  # Verifica se é uma lista
-                return [item for item in queryset if any(str(getattr(item.taxi, field)).lower() == search_lower for field in ['id', 'plate']) or str(item.id).lower() == search_lower or str(item.date).lower() == search_lower or str(item.latitude).lower() == search_lower or str(item.longitude).lower() == search_lower]
-
+                return [item for item in queryset if any(str(getattr(item.taxi, field)).lower() == search_lower for field in ['id', 'plate']) or str(item.id).lower() == search_lower or (search_date and item.date == search_date) or str(item.latitude).lower() == search_lower or str(item.longitude).lower() == search_lower]
             else:  # Se for um queryset
                 query = Q()
-                for field in ['id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude']:
+                for field in ['id', 'taxi__id', 'taxi__plate', 'latitude', 'longitude']:
                     query |= Q(**{f'{field}__icontains': search_lower})
+                if search_date is not None:
+                    query |= Q(date=search_date)
                 return queryset.filter(query)
         return queryset
-
+    
     def get_page_size(self):
         page_size = self.request.query_params.get('page_size', 10)
         try:
@@ -97,32 +104,36 @@ class TrajectoriesUtils(BaseUtils):
     def sort_trajectories(self, trajectories, sort_by):
         return self.sort_objects(trajectories, sort_by)
 
-    def search_trajectories(self, trajectories, search):
-        return self.search_objects(trajectories, search, 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude')
+    def search_trajectories(self, trajectories, search):   
+        if search:
+            return self.search_objects(trajectories, search, 'id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude')
+        return trajectories
 
 class LastTaxisLocationUtils(BaseUtils):
-
-    def get_taxis_last_location(self):
-        # Obtém o último trajeto de cada táxi
-        taxi_last_trajectories = Trajectories.objects.values('taxi_id').annotate(last_trajectory_id=Max('id'))
-        # Lista para os IDs dos trajetos mais recentes de cada táxi       
-        last_trajectory_ids = []       
-        # Obtém o ID do último trajeto de cada táxi
-        for trajectory_info in taxi_last_trajectories:
-           # Obtém o último trajeto com base no ID do táxi e data mais recente
-            last_trajectory_id = Trajectories.objects.filter(taxi_id=trajectory_info['taxi_id']).latest('date').id
-            last_trajectory_ids.append(last_trajectory_id)
-        # Consulta para obter os trajetos completos com base nos IDs obtidos anteriormente
-        last_trajectories = Trajectories.objects.filter(id__in=last_trajectory_ids)
-        # Retorna os trajetos completos mais recentes com base nos IDs obtidos
+    
+    def get_taxis_last_location(self, search_date=None):
+        # Filtra os trajetos com base na data, se fornecida
+        if search_date:
+            last_trajectories = Trajectories.objects.filter(date__lte=search_date).order_by('-date').distinct('taxi_id')
+        else:
+            # Obtém o último trajeto de cada táxi
+            last_trajectories = Trajectories.objects.filter(
+                id__in=Subquery(
+                    Trajectories.objects.values('taxi_id').annotate(
+                        last_trajectory_id=Max('id')
+                    ).values('last_trajectory_id')
+                )
+            )
         return last_trajectories
- 
+    
     def filter_last_locations(self, last_locations, filter_by):
         return self.filter_objects(last_locations, filter_by)
  
     def sort_last_locations(self, last_locations, sort_by):
         return self.sort_objects(last_locations, sort_by)
     
-    def search_last_locations(self, last_locations, search):
-        return self.search_objects(last_locations, search, 'id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude')
+    def search_last_locations(self, last_locations, search):  
+        if search:
+            return self.search_objects(last_locations, search, 'id', 'taxi__id', 'taxi__plate', 'date', 'latitude', 'longitude')
+        return last_locations
 
