@@ -80,7 +80,6 @@ python --version
 
 **4.1.3. Instale as Dependências do Projeto:**
 * Navegue até o diretório onde você baixou/clonou o repositório usando o terminal.
-
 * Instale as dependências necessárias executando o comando:
 ```
 pip install -r requirements.txt
@@ -88,7 +87,6 @@ pip install -r requirements.txt
 
 **4.1.4. Configure o Banco de Dados:**
 * Se necessário, configure o banco de dados conforme as instruções do arquivo README ou documentação do projeto.
-
 * Execute as migrações do banco de dados com o comando:
 ```
 python manage.py migrate
@@ -110,6 +108,7 @@ http://127.0.0.1:8000/
 http://127.0.0.1:8000/swagger/
 ```
 * No Swagger, você poderá visualizar a documentação da API e testar as funcionalidades diretamente pelo navegador.
+* Ou, se preferir, use ferramentas como o Postman para realizar requisições GET, por exemplo, para listar todos os táxis ou consultar a última localização de um táxi específico.
 
 **4.2.2. Explore os Endpoints da API:**
 * Use as URLs e parâmetros documentados para consultar táxis, trajetórias, e aplicar filtros, ordenações e paginação conforme necessário.
