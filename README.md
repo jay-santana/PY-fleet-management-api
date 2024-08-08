@@ -61,7 +61,59 @@ O projeto consiste na criação de uma API REST de um [Software de Gestão de Fr
 
 ## 4. Guia Prático de Instalação e Uso
 
+### 4.1 Instalação
 
+**4.1.1. Clone o Repositório ou Baixe o Arquivo do Projeto:**
+* Se você estiver familiarizado com o Git, pode clonar o repositório usando o seguinte comando:
+bash
+```
+git clone https://github.com/jay-santana/PY-fleet-management-api.git
+```
+* Ou, se preferir, baixe diretamente os arquivos do projeto no [GitHub](https://github.com/jay-santana/PY-fleet-management-api?tab=readme-ov-file).
+
+**4.1.2. Certifique-se de ter o Python e os pacotes necessários instalados em seu sistema:**
+* Verifique se o Python está instalado em seu sistema digitando o seguinte comando no terminal:
+```
+python --version
+```
+* Se o Python não estiver instalado, você pode baixá-lo e instalá-lo a partir do [site oficial](https://docs.pytest.org/en/8.0.x/getting-started.html#install-pytest).
+
+**4.1.3. Instale as Dependências do Projeto:**
+* Navegue até o diretório onde você baixou/clonou o repositório usando o terminal.
+
+* Instale as dependências necessárias executando o comando:
+```
+pip install -r requirements.txt
+```
+
+**4.1.4. Configure o Banco de Dados:**
+* Se necessário, configure o banco de dados conforme as instruções do arquivo README ou documentação do projeto.
+
+* Execute as migrações do banco de dados com o comando:
+```
+python manage.py migrate
+```
+**4.1.5. Execute o Projeto:**
+* Para iniciar a API, execute o seguinte comando no terminal:
+```
+python manage.py runserver
+```
+#### 4.2 Uso
+
+**4.2.1. Acesse a API através do navegador ou ferramenta de teste de API (como Postman):**
+* Uma vez que o servidor esteja em execução, você pode acessar os endpoints da API utilizando a URL padrão:
+```
+http://127.0.0.1:8000/
+```
+* Para explorar e testar a API de forma interativa, acesse o Swagger usando a URL:
+```
+http://127.0.0.1:8000/swagger/
+```
+* No Swagger, você poderá visualizar a documentação da API e testar as funcionalidades diretamente pelo navegador.
+
+**4.2.2. Explore os Endpoints da API:**
+* Use as URLs e parâmetros documentados para consultar táxis, trajetórias, e aplicar filtros, ordenações e paginação conforme necessário.
+* Consulte a documentação dos endpoints no Swagger para detalhes sobre como interagir com a API.
 
 ## 5. Testes Unitários
 
