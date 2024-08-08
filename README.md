@@ -16,7 +16,7 @@
 
 ![zach-vessels-utMdPdGDc8M-unsplash](https://firebasestorage.googleapis.com/v0/b/laboratoria-945ea.appspot.com/o/fleet-management-api-java%2Fthumb.jpg?alt=media)
 
-## 1. Prefácil
+## 1. Prefácio
 
 Este projeto foi desenvolvido como parte do programa prático intensivo de Python da Laboratoria, que visa preparar desenvolvedoras para os desafios do mercado de trabalho em tecnologia. Durante o curso, os participantes têm a oportunidade de aplicar conceitos teóricos em projetos práticos, desenvolvendo habilidades técnicas e adquirindo experiência na construção de soluções reais. Este projeto, em particular, representa uma etapa significativa desse processo, focando na aplicação de conceitos de Internet das Coisas (IoT) e desenvolvimento de APIs RESTful.
 
@@ -47,12 +47,12 @@ O projeto consiste na criação de uma API REST de um [Software de Gestão de Fr
 * **Número da Página:** Use `?page=` para definir o número da página que deseja visualizar.
 * **Tamanho da Página:** Utilize `?page_size=` para definir a quantidade de objetos exibidos por página.
 * **Ordenação por ID Externo e Interno:** Organize os resultados de forma ascendente ou descendente de acordo com o ID externo ou dados internos dos táxis (como ID e placa).
-- Ordene por ID externo de forma ascendente com `?sort_by=id` ou de forma descendente com `?sort_by=-id`.
-- Ordene por ID interno de forma ascendente com `?sort_by=taxi__id` e por placa com `?sort_by=taxi__plate`.
-- Ordene de forma descendente por ID interno com `?sort_by=-taxi__id` e por placa com `?sort_by=-taxi__plate`.
+    - Ordene por ID externo de forma ascendente com `?sort_by=id` ou de forma descendente com `?sort_by=-id`.
+    - Ordene por ID interno de forma ascendente com `?sort_by=taxi__id` e por placa com `?sort_by=taxi__plate`.
+    - Ordene de forma descendente por ID interno com `?sort_by=-taxi__id` e por placa com `?sort_by=-taxi__plate`.
 * **Ordenação por Data e Localização:** Organize os dados de forma ascendente ou descendente por data, latitude e longitude.
-- Ordene por data, latitude e longitude de forma ascendente com `?sort_by=date`, `?sort_by=latitude`, e `?sort_by=longitude`.
-- Ordene de forma descendente com `?sort_by=-date`, `?sort_by=-latitude`, e `?sort_by=-longitude`.
+    - Ordene por data, latitude e longitude de forma ascendente com `?sort_by=date`, `?sort_by=latitude`, e `?sort_by=longitude`.
+    - Ordene de forma descendente com `?sort_by=-date`, `?sort_by=-latitude`, e `?sort_by=-longitude`.
 
 #### Filtros e Pesquisa Avançada:
 
